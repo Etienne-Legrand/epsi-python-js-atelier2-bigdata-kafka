@@ -18,9 +18,8 @@
   },
   "homepage": "https://github.com/Etienne-Legrand/Atelier2_BigData_API#readme",
   "dependencies": {
-    "csv-parser": "^3.0.0",
+    "csv-parse": "^5.5.3",
     "express": "^4.18.2",
-    "fs": "^0.0.1-security",
     "nodemon": "^3.0.3"
   },
   "type": "module"

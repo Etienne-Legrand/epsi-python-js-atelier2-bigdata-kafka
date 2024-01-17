@@ -1,9 +1,10 @@
-import express from "express";
-import Datastore from "nedb";
+const express = require("express");
+const fs = require("fs");
+const { parse } = require("csv-parse");
 
 const PORT = 3000;
 
-// Base de données
+// Fichier CSV
 const db = new Datastore({ filename: "movies" });
 db.loadDatabase();
 
@@ -48,22 +49,18 @@ router.post("/movies", (req, res) => {
   );
 
   if (missingProps.length > 0) {
-    res
-      .status(400)
-      .json({
-        error: `Les propriétés suivantes sont manquantes : ${missingProps.join(
-          ", "
-        )}`,
-      });
+    res.status(400).json({
+      error: `Les propriétés suivantes sont manquantes : ${missingProps.join(
+        ", "
+      )}`,
+    });
   } else {
     const movie = req.body;
     db.insert(movie, (err, newMovie) => {
       if (err) {
-        res
-          .status(500)
-          .json({
-            error: "Une erreur est survenue lors de la création du film.",
-          });
+        res.status(500).json({
+          error: "Une erreur est survenue lors de la création du film.",
+        });
       } else {
         res.status(201).json(newMovie);
       }
@@ -75,11 +72,9 @@ router.post("/movies", (req, res) => {
 router.get("/movies", (req, res) => {
   db.find({}, (err, docs) => {
     if (err) {
-      res
-        .status(500)
-        .json({
-          error: "Une erreur est survenue lors de la récupération des films.",
-        });
+      res.status(500).json({
+        error: "Une erreur est survenue lors de la récupération des films.",
+      });
     } else {
       res.status(200).json(docs);
     }
@@ -90,11 +85,9 @@ router.get("/movies", (req, res) => {
 router.get("/movies/:id", (req, res) => {
   db.findOne({ _id: req.params.id }, (err, movie) => {
     if (err) {
-      res
-        .status(500)
-        .json({
-          error: "Une erreur est survenue lors de la récupération du film.",
-        });
+      res.status(500).json({
+        error: "Une erreur est survenue lors de la récupération du film.",
+      });
     } else if (!movie) {
       res.status(404).json({ error: "Aucun film trouvé avec cet ID." });
     } else {
@@ -113,11 +106,9 @@ router.patch("/movies/:id", (req, res) => {
     {},
     (err, nbMoviesUpdated) => {
       if (err) {
-        res
-          .status(500)
-          .json({
-            error: "Une erreur est survenue lors de la mise à jour du film.",
-          });
+        res.status(500).json({
+          error: "Une erreur est survenue lors de la mise à jour du film.",
+        });
       } else if (nbMoviesUpdated === 0) {
         res.status(404).json({ error: "Aucun film trouvé avec cet ID." });
       } else {
@@ -131,11 +122,9 @@ router.patch("/movies/:id", (req, res) => {
 router.delete("/movies/:id", (req, res) => {
   db.remove({ _id: req.params.id }, {}, (err, nbMoviesRemoved) => {
     if (err) {
-      res
-        .status(500)
-        .json({
-          error: "Une erreur est survenue lors de la suppression du film.",
-        });
+      res.status(500).json({
+        error: "Une erreur est survenue lors de la suppression du film.",
+      });
     } else if (nbMoviesRemoved === 0) {
       res.status(404).json({ error: "Aucun film trouvé avec cet ID." });
     } else {
