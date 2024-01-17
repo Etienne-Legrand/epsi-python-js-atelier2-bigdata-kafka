@@ -1,12 +1,7 @@
 const express = require("express");
 const fs = require("fs");
 const { parse } = require("csv-parse");
-
 const PORT = 3000;
-
-// Fichier CSV
-const db = new Datastore({ filename: "movies" });
-db.loadDatabase();
 
 // Start express
 const app = express();
@@ -24,111 +19,54 @@ app.use((req, res, next) => {
 const router = express.Router();
 app.use("/api", router);
 
+router.get("/trafic/:datetime", (req, res) => {
+  const requestedDatetime = req.params.datetime;
+  const data = [];
+
+  fs.createReadStream("./datamerge.csv")
+    .pipe(parse({ delimiter: ";", from_line: 2 }))
+    .on("data", function (row) {
+      const rowData = {
+        datetime: row[0],
+        predefinedLocationReference: row[1],
+        averageVehicleSpeed: row[2],
+        travelTime: row[3],
+        travelTimeReliability: row[4],
+        trafficStatus: row[5],
+        vehicleProbeMeasurement: row[6],
+        GeoPoint: row[7],
+        GeoShape: row[8],
+        gml_id: row[9],
+        id_rva_troncon_fcd_v1_1: row[10],
+        hierarchie: row[11],
+        hierarchie_dv: row[12],
+        denomination: row[13],
+        insee: row[14],
+        sens_circule: row[15],
+        vitesse_maxi: row[16],
+      };
+      data.push(rowData);
+    })
+    .on("end", function () {
+      // Filtrer les données par date
+      const filteredData = data.filter(
+        (entry) => entry.datetime === requestedDatetime
+      );
+
+      // Envoyer les données filtrées en tant que réponse JSON
+      res.json(filteredData);
+
+      console.log("finished");
+    })
+    .on("error", function (error) {
+      console.log(error.message);
+      res
+        .status(500)
+        .json({ error: "Erreur lors de la lecture du fichier CSV" });
+    });
+});
+
 // Port d'écoute
 app.listen(PORT, () => {
   console.log(`Le serveur est lancé sur le port ${PORT}`);
-});
-
-/**************************************
- *********** API CRUD MOVIES **********
- **************************************/
-
-// Create
-router.post("/movies", (req, res) => {
-  // Vérifier si toutes les propriétés nécessaires sont présentes
-  const requiredProps = [
-    "titre",
-    "anneeDeSortie",
-    "langue",
-    "realisateur",
-    "genre",
-    "poster",
-  ];
-  const missingProps = requiredProps.filter(
-    (prop) => !req.body.hasOwnProperty(prop)
-  );
-
-  if (missingProps.length > 0) {
-    res.status(400).json({
-      error: `Les propriétés suivantes sont manquantes : ${missingProps.join(
-        ", "
-      )}`,
-    });
-  } else {
-    const movie = req.body;
-    db.insert(movie, (err, newMovie) => {
-      if (err) {
-        res.status(500).json({
-          error: "Une erreur est survenue lors de la création du film.",
-        });
-      } else {
-        res.status(201).json(newMovie);
-      }
-    });
-  }
-});
-
-// Read all
-router.get("/movies", (req, res) => {
-  db.find({}, (err, docs) => {
-    if (err) {
-      res.status(500).json({
-        error: "Une erreur est survenue lors de la récupération des films.",
-      });
-    } else {
-      res.status(200).json(docs);
-    }
-  });
-});
-
-// Read one
-router.get("/movies/:id", (req, res) => {
-  db.findOne({ _id: req.params.id }, (err, movie) => {
-    if (err) {
-      res.status(500).json({
-        error: "Une erreur est survenue lors de la récupération du film.",
-      });
-    } else if (!movie) {
-      res.status(404).json({ error: "Aucun film trouvé avec cet ID." });
-    } else {
-      res.status(200).json(movie);
-    }
-  });
-});
-
-// Update
-router.patch("/movies/:id", (req, res) => {
-  const updatedMovie = { ...req.body };
-
-  db.update(
-    { _id: req.params.id },
-    { $set: updatedMovie },
-    {},
-    (err, nbMoviesUpdated) => {
-      if (err) {
-        res.status(500).json({
-          error: "Une erreur est survenue lors de la mise à jour du film.",
-        });
-      } else if (nbMoviesUpdated === 0) {
-        res.status(404).json({ error: "Aucun film trouvé avec cet ID." });
-      } else {
-        res.status(200).json(updatedMovie);
-      }
-    }
-  );
-});
-
-// Delete
-router.delete("/movies/:id", (req, res) => {
-  db.remove({ _id: req.params.id }, {}, (err, nbMoviesRemoved) => {
-    if (err) {
-      res.status(500).json({
-        error: "Une erreur est survenue lors de la suppression du film.",
-      });
-    } else if (nbMoviesRemoved === 0) {
-      res.status(404).json({ error: "Aucun film trouvé avec cet ID." });
-    } else {
-      res.status(200).json({ message: "Le film a été supprimé avec succès." });
-    }
-  });
 });
