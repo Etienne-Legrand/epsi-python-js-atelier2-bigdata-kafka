@@ -1,6 +1,6 @@
-const express = require("express");
-const fs = require("fs");
-const { parse } = require("csv-parse");
+import express from "express";
+import fs from "fs";
+import { parse } from "csv-parse";
 const PORT = 3000;
 
 // Start express
