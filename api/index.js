@@ -19,6 +19,7 @@ app.use((req, res, next) => {
 const router = express.Router();
 app.use("/api", router);
 
+// Route pour récupérer les données de trafic pour une date donnée
 router.get("/trafic/:datetime", (req, res) => {
   const requestedDatetime = req.params.datetime;
   const data = [];
@@ -55,8 +56,6 @@ router.get("/trafic/:datetime", (req, res) => {
 
       // Envoyer les données filtrées en tant que réponse JSON
       res.json(filteredData);
-
-      console.log("finished");
     })
     .on("error", function (error) {
       console.log(error.message);
