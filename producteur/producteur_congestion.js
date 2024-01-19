@@ -2,7 +2,7 @@ import axios from "axios";
 import { Kafka, Partitioners } from "kafkajs";
 
 const kafka = new Kafka({
-  clientId: "my-producer",
+  clientId: "producteur_congestion",
   brokers: ["localhost:9092"],
 });
 const topic = "indice_congestion_moyen";
@@ -37,7 +37,7 @@ const produceMessage = async () => {
       const key = troncon.predefinedLocationReference;
       const congestionIndex = calculateCongestionIndex(troncon);
 
-      console.log(`KEY: ${key} Taux de congestion : ${congestionIndex}`);
+      console.log(`Tronçon: ${key} => Taux de congestion: ${congestionIndex}`);
       
       await producer.send({
         topic,
@@ -54,7 +54,7 @@ const produceMessage = async () => {
 
 const run = async () => {
   await producer.connect();
-  setInterval(produceMessage, 10000);
+  setInterval(produceMessage, 1000);
 };
 
 run().catch(console.error);
