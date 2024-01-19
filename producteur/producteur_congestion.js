@@ -11,22 +11,19 @@ const producer = kafka.producer({
 });
 
 const calculateCongestionIndex = (troncon) => {
-  let totalTroncons = 1; // Initialisé à 1 car nous avons au moins un tronçon
-  let totalCongested = 0;
+  let congestionIndex = 0;
 
   switch (troncon.trafficStatus) {
     case "congested":
-      totalCongested = 0.6;
-    case "heavy":
-      totalCongested = 0.8;
-    case "impossible":
-      totalCongested = 1;
+      congestionIndex = 0.6;
       break;
-    default:
-      totalCongested = 0;
+    case "heavy":
+      congestionIndex = 0.8;
+      break;
+    case "impossible":
+      congestionIndex = 1;
+      break;
   }
-
-  const congestionIndex = (totalCongested / totalTroncons) * 100;
 
   return congestionIndex;
 };
@@ -36,22 +33,20 @@ const produceMessage = async () => {
     const response = await axios.get("http://localhost:3000/api/trafic/2024-01-17T14:50:00+01:00");
     const trafficData = response.data;
 
-    if (Array.isArray(trafficData)) {
-      trafficData.forEach(async (troncon) => {
-        const key = troncon.predefinedLocationReference;
-        const congestionIndex = calculateCongestionIndex(troncon);
+    trafficData.forEach(async (troncon) => {
+      const key = troncon.predefinedLocationReference;
+      const congestionIndex = calculateCongestionIndex(troncon);
 
-        console.log(`KEY: ${key} Taux de congestion : ${congestionIndex}`);
-        
-        await producer.send({
-          topic,
-          messages: [{
-            key,
-            value: JSON.stringify({ congestionIndex }),
-          }],
-        });
+      console.log(`KEY: ${key} Taux de congestion : ${congestionIndex}`);
+      
+      await producer.send({
+        topic,
+        messages: [{
+          key,
+          value: JSON.stringify({ congestionIndex }),
+        }],
       });
-    }
+    });
   } catch (error) {
     console.error("Erreur lors de la récupération des données :", error);
   }

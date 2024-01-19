@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "api": "node index.js",
+    "api": "node api/index.js",
     "cc": "node consommateur/consommateur_congestion.js",
     "cv": "node consommateur/consommateur_vitesse.js",
     "pc": "node producteur/producteur_congestion.js",
