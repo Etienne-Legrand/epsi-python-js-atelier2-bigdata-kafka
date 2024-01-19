@@ -11,8 +11,8 @@ const run = async () => {
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
       const data = JSON.parse(message.value.toString());
-      console.log(`Key: ${message.key} => Vitesse moyenne: ${data.averageSpeed}`);
-      
+      console.log(`Key: ${message.key}    Vitesse moyenne: ${data.averageVehicleSpeed} km/h    Date: ${data.datetime}`);
+
       await consumer.commitOffsets([{ topic, partition, offset: message.offset }]);
     },
   });

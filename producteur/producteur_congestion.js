@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Kafka, Partitioners } from "kafkajs";
+import moment from "moment";
 
 const kafka = new Kafka({
   clientId: "producteur_congestion",
@@ -28,22 +29,23 @@ const calculateCongestionIndex = (troncon) => {
   return congestionIndex;
 };
 
-const produceMessage = async () => {
+const produceMessage = async (datetime) => {
   try {
-    const response = await axios.get("http://localhost:3000/api/trafic/2024-01-17T14:50:00+01:00");
+    console.log(`Récupération des données pour le ${datetime}`);
+    const response = await axios.get(`http://localhost:3000/api/trafic/${datetime}`);
     const trafficData = response.data;
 
     trafficData.forEach(async (troncon) => {
       const key = troncon.predefinedLocationReference;
       const congestionIndex = calculateCongestionIndex(troncon);
 
-      console.log(`Tronçon: ${key} => Taux de congestion: ${congestionIndex}`);
+      console.log(`Tronçon: ${key}    Taux de congestion: ${congestionIndex}    Date: ${datetime}`);
       
       await producer.send({
         topic,
         messages: [{
           key,
-          value: JSON.stringify({ congestionIndex }),
+          value: JSON.stringify({ congestionIndex, datetime }),
         }],
       });
     });
@@ -54,7 +56,20 @@ const produceMessage = async () => {
 
 const run = async () => {
   await producer.connect();
-  setInterval(produceMessage, 1000);
+  
+  const startTime = moment("2024-01-17T14:09:00+01:00");
+  const endTime = moment("2024-01-17T14:50:00+01:00");
+  let currentTime = moment(startTime);
+
+  // Itérer sur chaque minute entre startTime et endTime pour parcourir les données
+  // et envoyer un message à Kafka
+  while (currentTime <= endTime) {
+    await produceMessage(currentTime.format());
+    currentTime.add(1, 'minute');
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+
+  await producer.disconnect();
 };
 
 run().catch(console.error);
