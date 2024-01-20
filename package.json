@@ -9,7 +9,7 @@
     "cv": "node consommateur/consommateur_vitesse.js",
     "pc": "node producteur/producteur_congestion.js",
     "pv": "node producteur/producteur_vitesse.js",
-    "watch": "nodemon index.js"
+    "api-watch": "nodemon api/index.js"
   },
   "repository": {
     "type": "git",

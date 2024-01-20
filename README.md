@@ -2,10 +2,14 @@
 
 ## Explication rapide du projet
 
-L'api utilise node js avec express pour récupérer les données de trafic d'une date donnée.<br>
+L'api utilise Node.js avec Express.js pour récupérer les données de trafic d'une date donnée.<br>
 Voici un exemple de l'utilisation de l'api : http://localhost:3000/api/trafic/2024-01-17T14:50:00+01:00
 
-Ce projet utilise des données de trafic à une date et heure donnée pour calculer un indice moyen de congestion routière et pour calculer la vitesse moyenne des véhicule par tronçon. Les résultats sont ensuite diffusés via Apache Kafka.
+Ce projet utilise des données de trafic à une date et heure donnée pour calculer un indice moyen de congestion routière et pour calculer la vitesse moyenne des véhicules par tronçon. Les résultats sont ensuite diffusés via Apache Kafka.
+
+## Prérequis
+
+Avoir installeé Node.js et avoir un serveur Kafka de démarré sur l'URL localhost:9092.
 
 ## Installer les dépendances
 
