@@ -9,7 +9,7 @@ Ce projet utilise des données de trafic à une date et heure donnée pour calcu
 
 ## Prérequis
 
-Avoir installeé Node.js et avoir un serveur Kafka de démarré sur l'URL localhost:9092.
+Avoir installé Node.js et avoir un serveur Kafka de démarré sur l'URL localhost:9092.
 
 ## Installer les dépendances
 
