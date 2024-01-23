@@ -18,7 +18,7 @@ const produceMessage = async (datetime) => {
         messages: [
           {
             key,
-            value: JSON.stringify({ averageVehicleSpeed, datetime }),
+            value: JSON.stringify({ key, averageVehicleSpeed, datetime }),
           },
         ],
       });
