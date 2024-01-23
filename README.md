@@ -9,7 +9,10 @@ Ce projet utilise des données de trafic à une date et heure donnée pour calcu
 
 ## Prérequis
 
-Avoir installé Node.js et avoir un serveur Kafka de démarré sur l'URL localhost:9092.
+Avoir :
+- installé Node.js, python et Java
+- un serveur Kafka de démarré sur l'URL localhost:9092.
+- (optionnel) un serveur flink de démarré 
 
 ## Installer les dépendances
 
@@ -21,6 +24,8 @@ npm install
 
 ```bash
 npm run api
+# OU
+node api/index.js
 ```
 
 ## Démarrer les producteurs
@@ -28,9 +33,13 @@ npm run api
 ```bash
 # taux de congestion
 npm run pc
+  # OU
+node producteur/producteur_congestion.js
 
 # vitesse moyenne
 npm run pv
+  # OU
+node producteur/producteur_vitesse.js
 ```
 
 ## Démarrer les consommateurs
@@ -38,7 +47,11 @@ npm run pv
 ```bash
 # taux de congestion
 npm run cc
+  # OU
+node consommateur/consommateur_congestion.js
 
 # vitesse moyenne
 npm run cv
+  # OU
+node consommateur/consommateur_vitesse.js
 ```
