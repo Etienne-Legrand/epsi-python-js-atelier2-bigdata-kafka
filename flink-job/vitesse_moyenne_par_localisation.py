@@ -15,6 +15,7 @@ jar_file_path = os.path.join(script_directory, 'flink-sql-connector-kafka-1.17.2
 env = StreamExecutionEnvironment.get_execution_environment()
 env.add_jars('file://' + jar_file_path)
 
+# Connexion au producteur
 source = KafkaSource.builder() \
     .set_bootstrap_servers("localhost:9092") \
     .set_topics("vitesse_moyenne_localisation") \
